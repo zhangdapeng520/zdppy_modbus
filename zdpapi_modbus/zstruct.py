@@ -159,7 +159,7 @@ def get_data_real_length(type_str, data_length):
     return result
 
 
-def trans_float(num_arr: List[float]) -> Tuple[int]:
+def trans_float_to_int(num_arr: List[float]) -> Tuple[int]:
     """
     将浮点型转换为整型
 
@@ -170,7 +170,7 @@ def trans_float(num_arr: List[float]) -> Tuple[int]:
     return b
 
 
-def trans_int(num_arr: List[int], keep_num: int = 16) -> List[float]:
+def trans_int_to_float(num_arr: List[int], keep_num: int = 2) -> List[float]:
     """
     将整数类型转换为浮点数类型
 
@@ -191,11 +191,11 @@ def transform_type_arr(type_str, num_arr, keep_num=2, reverse=False):
     if type_str.lower() == "f":  # 浮点数类型
         if reverse:
             # 将整数数组转换为浮点数数组
-            result = trans_int(num_arr, keep_num=keep_num)
+            result = trans_int_to_float(num_arr, keep_num=keep_num)
 
         # 将浮点数数组转换为整数数组
         else:
-            result = trans_float(num_arr)
+            result = trans_float_to_int(num_arr)
 
     elif type_str.lower() == "b":  # 布尔值类型
         # 不需要解析和反解析

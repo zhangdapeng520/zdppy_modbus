@@ -1,6 +1,11 @@
 # zdpapi_modbus
 python版modbus协议快速开发工具库
 
+安装方式
+```shell
+pip install zdpapi_modbus
+```
+
 ## 一、快速入门
 
 ### 1.1 实例1：读写数据
@@ -200,3 +205,247 @@ if __name__ == "__main__":
     main()
 ```
 
+### 1.3 批量写入和批量读取modbus
+
+### 1.3.1 slave
+```python
+"""
+按照1秒钟传递100台机组的数据，1台机组25个变量
+"""
+
+from zdpapi_modbus import cst, modbus_tcp, rand_float, trans_float_to_int
+import time
+
+# 创建一个TCP服务
+server = modbus_tcp.TcpServer()
+
+# 启动server
+server.start()
+
+# 添加一个slave
+slave_id = 1
+slave_1 = server.add_slave(slave_id)
+
+# 添加一个block
+block_name = "0"
+slave_1.add_block(block_name, cst.HOLDING_REGISTERS, 0, 3000)
+
+# 单台风机的数据
+variables = [
+    "机舱X方向振动",
+    "机舱Y方向振动",
+    "限功率运行状态",
+    "电网有功功率",
+    "有功功率",
+    "风轮转速",
+    "环境温度",
+    "瞬时风向",
+    "瞬时风速",
+    "工作模式",
+    "测试写入主控变量1",
+    "1#风向仪瞬时风向",
+    "2#风向仪瞬时风向",
+    "机舱外风向",
+    "偏航方位角",
+    "测试（高频数据）1",
+    "测试（高频数据）2",
+    "测试（高频数据）3",
+    "测试（高频数据）4",
+    "测试（高频数据）5",
+    "测试（高频数据）6",
+    "测试（高频数据）7",
+    "测试（高频数据）8",
+    "测试（高频数据）9",
+    "测试（高频数据）10",
+]
+
+# 分两个slave传，一个传50台风机
+# 生成数据
+data = []
+address = 0
+for i in range(1, 51):
+    for j in range(1, len(variables)+1):
+        control = {}
+        control["device_id"] = i
+        control["cname"] = variables[j-1]
+        control["name"] = f"v{i}_{j}"
+        address += 2
+        control["address"] = address
+        control["length"] = 2
+        control["func"] = 3
+        control["type"] = "F"
+        data.append(control)
+
+# 生成随机数
+data_float = [rand_float(0, 100) for _ in data]
+
+# 不断的写入数据
+while True:
+    # 生成数据
+
+    # 写入数据
+    slave = server.get_slave(slave_id)  # slave
+    address = 0
+
+    values = trans_float_to_int(data_float)
+    value_length = len(values)
+    print("要传输的数据个数：", value_length)
+    index = 0
+    while True:
+        slave.set_values(block_name, index, values[index:index + 100])
+        
+        # 最后一次传输
+        value_length -= 100
+        if value_length <= 100:
+            slave.set_values(block_name, index, values[index:])
+            break
+        
+        # 每次传100个数
+        index += 100
+
+    time.sleep(1)
+```
+
+### 1.3.2 master
+```python
+"""
+从服务端获取100台机组的数据，每台机组有25个变量
+"""
+from zdpapi_modbus import cst, modbus_tcp, trans_int_to_float
+import time
+import random
+
+master = modbus_tcp.TcpMaster()
+master.set_timeout(5.0)
+slave_id = 1
+
+
+# 单台风机的数据
+variables = [
+    "机舱X方向振动",
+    "机舱Y方向振动",
+    "限功率运行状态",
+    "电网有功功率",
+    "有功功率",
+    "风轮转速",
+    "环境温度",
+    "瞬时风向",
+    "瞬时风速",
+    "工作模式",
+    "测试写入主控变量1",
+    "1#风向仪瞬时风向",
+    "2#风向仪瞬时风向",
+    "机舱外风向",
+    "偏航方位角",
+    "测试（高频数据）1",
+    "测试（高频数据）2",
+    "测试（高频数据）3",
+    "测试（高频数据）4",
+    "测试（高频数据）5",
+    "测试（高频数据）6",
+    "测试（高频数据）7",
+    "测试（高频数据）8",
+    "测试（高频数据）9",
+    "测试（高频数据）10",
+]
+
+# 分两个slave传，一个传50台风机
+# 生成数据
+data = []
+address = 0
+for i in range(1, 51):
+    for j in range(1, len(variables)+1):
+        control = {}
+        control["device_id"] = i
+        control["cname"] = variables[j-1]
+        control["name"] = f"v{i}_{j}"
+        address += 2
+        control["address"] = address
+        control["length"] = 2
+        control["func"] = 3
+        control["type"] = "F"
+        data.append(control)
+
+while True:
+    # 读取数据
+    data = []
+    data_length = 2500  # 要取出2500个数
+    index = 0
+    while True:
+        # 每次取出100个数
+        length = 100
+        values = master.execute(
+            slave_id, cst.READ_HOLDING_REGISTERS, index, length)
+        data.extend(values)
+
+        # 最后一次取
+        data_length -= 100
+        if data_length <= 100:
+            values = master.execute(
+                slave_id, cst.READ_HOLDING_REGISTERS, index, data_length)
+            data.extend(values)
+            break
+
+        index += 100
+
+    # print("data:", data, len(data))
+
+    # 解析为真实的数组
+    result = trans_int_to_float(data, keep_num=2)
+    print("最终结果：", result, len(result))
+
+    # 1s执行一次
+    time.sleep(1)
+```
+
+
+## 二、数据的打包和解包
+
+### 2.1 基本使用
+```python
+from zdpapi_modbus import *
+
+data = [11, 22, 33]
+# 测试打包
+print("============================================测试打包=====================================================")
+print(pack_byte(data))
+print(pack_int(data))
+print(pack_long(data))
+print(pack_float(data))
+print(pack_double(data))
+print("============================================测试完毕=====================================================\n\n")
+
+# 测试解包
+print("============================================测试解包=====================================================")
+print(unpack_byte(len(data), pack_byte(data)))
+print(unpack_int(len(data), pack_int(data)))
+print(unpack_long(len(data), pack_long(data)))
+print(unpack_float(len(data), pack_float(data)))
+print(unpack_double(len(data), pack_double(data)))
+print("============================================测试完毕=====================================================\n\n")
+```
+
+### 2.2 数据类型转换
+```python
+from zdpapi_modbus import *
+
+data = [11.11, 22.22, 33.33]
+
+# 将浮点数转换为整数，再将整数还原为浮点数
+print(trans_float_to_int(data))
+print(trans_int_to_float(trans_float_to_int(data)))
+```
+
+## 三、生成随机数
+
+### 3.1 生成随机浮点数
+```python
+from zdpapi_modbus import *
+
+data = [rand_float(0, 100) for _ in range(50)]
+print(data)
+
+# 将浮点数转换为整数，再将整数还原为浮点数
+print(trans_float_to_int(data))
+print(trans_int_to_float(trans_float_to_int(data), keep_num=6))
+```

@@ -13,6 +13,7 @@ READ_COILS = 1  # 读线圈
 READ_DISCRETE_INPUTS = 2  # 读离散输入
 READ_HOLDING_REGISTERS = 3  # 读寄存器
 READ_INPUT_REGISTERS = 4  # 读输入寄存器
+
 # 常用写数据
 WRITE_SINGLE_COIL = 5  # 写单一线圈
 WRITE_SINGLE_REGISTER = 6  # 写单一寄存器
