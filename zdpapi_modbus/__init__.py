@@ -7,3 +7,5 @@ from .zstruct import (
     trans_int_to_float, trans_float_to_int, 
 )
 from .random import rand_float
+from .slave import Slave
+from .master import Master
