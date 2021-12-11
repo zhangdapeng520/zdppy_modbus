@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "zdpapi_modbus"
+version = "1.0.0"
+description = "python版modbus协议快速开发工具库"
+authors = ["张大鹏 <lxgzhw@163.com>"]
+license = "MIT"
+readme = "README.md"
+homepage = "https://github.com/zhangdapeng520/zdpapi_modbus"
+repository = "https://github.com/zhangdapeng520/zdpapi_modbus"
+documentation = "https://github.com/zhangdapeng520/zdpapi_modbus"
+keywords = ["zdpapi", "modbus", "zhangdapeng"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+
+[tool.poetry.dev-dependencies]
+autopep8 = "^1.6.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
