@@ -1,6 +1,7 @@
 """
 master角色
 """
+from typing import Tuple
 from .libs.modbus_tk import modbus_tcp
 from .libs.modbus_tk import defines as cst
 from .zstruct import trans_int_to_float
@@ -15,7 +16,7 @@ class Master:
         self.master = modbus_tcp.TcpMaster(
             host=host, port=port, timeout_in_sec=timeout_in_sec)
 
-    def read_many_float(self, slave_id: int, data_length: int, keep_num: int = 2):
+    def read_float(self, slave_id: int, data_length: int, keep_num: int = 2):
         """
         批量读取float类型的数据
         """
@@ -42,12 +43,29 @@ class Master:
         result = trans_int_to_float(data, keep_num=keep_num)
         return result
 
-    def run_read_many_float(self, slave_id: int, data_length: int, keep_num: int = 2, freq_second: int = 1, console:bool=False):
+    def read(self, slave_id, func_code, address, length):
         """
-        批量读取float类型的数据
+        从modbus读取数据
         """
-        while True:
-            data = self.read_many_float(slave_id, data_length, keep_num)
-            if console:
-                print(data)
-            time.sleep(freq_second)
+        # 超过124个了
+        if length > 124:
+            data = []
+            while length > 124:
+                temp = self.master.execute(slave_id, func_code, address, 124)
+                data.extend(temp)
+                address += 124
+                length -= 124
+            else: # 保证读取完毕
+                temp = self.master.execute(slave_id, func_code, address, length)
+                data.extend(temp)
+            return data
+        
+        # 不超过则正常读取
+        return self.master.execute(slave_id, func_code, address, length)
+
+    def to_float(self, data: Tuple[int], keep_num: int = 2):
+        """
+        将整数类型的列表转换为浮点数类型的列表
+        """
+        result = trans_int_to_float(data, keep_num=keep_num)
+        return result

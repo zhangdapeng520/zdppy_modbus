@@ -34,7 +34,7 @@ class Slave:
         slave = self.slaves.get(slave_id)
         slave.add_block(block_name, func_code, address, length)
 
-    def write_many_float(self, slave_id, block_name, data: List[float]):
+    def write_float(self, slave_id, block_name, data: List[float]):
         """
         批量写入float数据。
         注意：地址位是连续的地址位，如果不连续，不要调用此功能。
@@ -56,18 +56,7 @@ class Slave:
 
             # 每次传100个数
             index += 100
-
-    def run(self, slave_id, block_name, data: List[float], freq_seconds: int = 1, random_data: bool = False):
-        """
-        运行Slave，使用slave向modbus写入数据
-        slave_id：slave的唯一编号
-        block_name：slave上对应的block的名称
-        data：要写入的数据，是浮点数列表
-        freq_seconds：写入频率，单位是秒
-        """
+            
+    def start(self):
         self.server.start()
-        while True:
-            if random_data:
-                data = [rand_float(0, 100) for _ in data]
-            self.write_many_float(slave_id, block_name, data)
-            time.sleep(freq_seconds)
+        

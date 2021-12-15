@@ -9,3 +9,4 @@ from .zstruct import (
 from .random import rand_float
 from .slave import Slave
 from .master import Master
+from .master_async import MasterAsync

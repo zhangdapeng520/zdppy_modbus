@@ -12,6 +12,7 @@ keywords = ["zdpapi", "modbus", "zhangdapeng"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
+modbus_tk = "^1.1.2"
 
 [tool.poetry.dev-dependencies]
 autopep8 = "^1.6.0"
