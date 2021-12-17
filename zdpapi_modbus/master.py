@@ -43,6 +43,7 @@ class Master:
         result = trans_int_to_float(data, keep_num=keep_num)
         return result
 
+    
     def read(self, slave_id, func_code, address, length):
         """
         从modbus读取数据
