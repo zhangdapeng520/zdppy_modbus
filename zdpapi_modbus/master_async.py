@@ -12,6 +12,7 @@ from .libs.modbus_tk import modbus_tcp
 from typing import Tuple
 from .zstruct import trans_int_to_float
 
+
 class MasterAsync(Master):
     """
     异步的Master类
@@ -122,7 +123,15 @@ class MasterAsync(Master):
         """
         return modbus_tcp.TcpQuery()
 
-    async def execute(
+    async def execute(self, slave, function_code, starting_address, quantity_of_x=0, output_value=0, data_format="", expected_length=-1, write_starting_address_FC23=0, timeout=1):
+        """
+        支持超时机制
+        """
+        async with timeout(1.5):
+            await self.__execute(
+                self, slave, function_code, starting_address, quantity_of_x, output_value, data_format, expected_length, write_starting_address_FC23)
+
+    async def __execute(
             self, slave, function_code, starting_address, quantity_of_x=0, output_value=0, data_format="", expected_length=-1, write_starting_address_FC23=0):
         """
         从modbus执行请求，获取数据
