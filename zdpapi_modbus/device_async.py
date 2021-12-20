@@ -8,7 +8,7 @@ import aioredis
 slave_id = 1
 
 
-class Device:
+class DeviceAsync:
     def __init__(self, *, modbus_ip: str = "127.0.0.1", modbus_port:int = 502,  device_id, address, length) -> None:
         self.device_id = device_id
         self.master = MasterAsync(modbus_ip, modbus_port)
