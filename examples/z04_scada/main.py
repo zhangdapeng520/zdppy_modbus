@@ -25,7 +25,7 @@ async def run():
         for device in devices:
             tasks.append(device.write_to_redis(redis_ip=redis_config.get("host"), redis_port=redis_config.get(
                 "port"), redis_db=redis_config.get("db"), controls=controls, debug=True))
-        await asyncio.gather(*tasks)
+        await asyncio.wait(tasks)
         await asyncio.sleep(0.3)
 
 if __name__ == "__main__":

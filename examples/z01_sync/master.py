@@ -2,7 +2,7 @@ from zdpapi_modbus import cst, modbus_tcp
 import time
 import random
 
-master = modbus_tcp.TcpMaster()
+master = modbus_tcp.TcpMaster("127.0.0.1", 5011)
 master.set_timeout(5.0)
 slave_id = 1
 
