@@ -177,6 +177,9 @@ def trans_int_to_float(num_arr: List[int], keep_num: int = 2) -> List[float]:
     @param num_arr: 整数类型的数组
     @param keep_num: 保留多少位小数
     """
+    if num_arr is None:
+        return []
+    
     r = struct.unpack(f"{len(num_arr) // 2}f",
                       struct.pack(f"{len(num_arr)}H", *num_arr))
     r = [round(i, keep_num) for i in r]

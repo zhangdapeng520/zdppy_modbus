@@ -1,0 +1,1 @@
+start python redis_acquisition_mtest.py
