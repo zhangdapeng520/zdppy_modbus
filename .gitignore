@@ -131,3 +131,4 @@ dmypy.json
 /*.bat
 main.py
 config.py
+.idea
