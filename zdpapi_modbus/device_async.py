@@ -36,12 +36,12 @@ class DeviceAsync:
         # 从modbus读取数据
         await asyncio.sleep(freeq_seconds)
         data = []
-        print("正在采集：", 1, 3, self.address, self.length)
+        # print("正在采集：", 1, 3, self.address, self.length)
         try:
             data = await self.master.execute(1, 3, self.address, self.length)
         except Exception as e:
             print(e)
-        print("采集到的原始数据是什么：", data)
+        # print("采集到的原始数据是什么：", data)
         
         values = trans_int_to_float(data)
 
@@ -50,7 +50,7 @@ class DeviceAsync:
 
         def mean(value_list):
             """取平均数"""
-            if not value_list:
+            if value_list is None or len(value_list) == 0:
                 return 0
             
             sum = 0
@@ -76,4 +76,3 @@ class DeviceAsync:
             print(f"设备{self.device_id}采集到的高频数据是什么：", self.raw)
             
         return self.raw, self.data_
-
