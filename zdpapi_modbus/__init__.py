@@ -12,3 +12,6 @@ from .master import Master
 from .master_async import MasterAsync
 from .device_async import DeviceAsync
 from .device import Device
+
+# funcs
+from .funcs.writer import write

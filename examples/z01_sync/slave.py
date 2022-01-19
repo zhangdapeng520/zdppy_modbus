@@ -3,7 +3,7 @@ import time
 import random
 
 # 创建一个TCP服务
-server = modbus_tcp.TcpServer()
+server = modbus_tcp.TcpServer(port=8888, address='0.0.0.0')
 # 启动server
 server.start()
 # 添加一个slave
